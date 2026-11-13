@@ -15,11 +15,11 @@ const createFamilyBom = async (request, response) => {
       altActivationGuide: request.body.altActivationGuide,
       chip: request.body.chip,
       riskFactor: request.body.riskFactor,
-      commitment12Months: request.body.commitment12Months,
-      commitment24Months: request.body.commitment24Months,
-      commitment36Months: request.body.commitment36Months,
-      commitment48Months: request.body.commitment48Months,
-      commitment60Months: request.body.commitment60Months,
+      adhesion12Months: request.body.adhesion12Months,
+      adhesion24Months: request.body.adhesion24Months,
+      adhesion36Months: request.body.adhesion36Months,
+      adhesion48Months: request.body.adhesion48Months,
+      adhesion60Months: request.body.adhesion60Months,
       installationCost: request.body.installationCost,
       createdBy: request.user._id,
       updatedBy: request.user._id,
@@ -45,11 +45,11 @@ const findAllFamiliesBom = async (request, response) => {
     if (!canSeePrice) {
       allFamiliesBom.forEach((item) => {
         item.riskFactor = undefined;
-        item.commitment12Months = undefined;
-        item.commitment24Months = undefined;
-        item.commitment36Months = undefined;
-        item.commitment48Months = undefined;
-        item.commitment60Months = undefined;
+        item.adhesion12Months = undefined;
+        item.adhesion24Months = undefined;
+        item.adhesion36Months = undefined;
+        item.adhesion48Months = undefined;
+        item.adhesion60Months = undefined;
         item.installationCost = undefined;
       });
     }
@@ -98,11 +98,11 @@ const findFamilyBomById = async (request, response) => {
 
     if (!canSeePrice) {
       familyBom.riskFactor = undefined;
-      familyBom.commitment12Months = undefined;
-      familyBom.commitment24Months = undefined;
-      familyBom.commitment36Months = undefined;
-      familyBom.commitment48Months = undefined;
-      familyBom.commitment60Months = undefined;
+      familyBom.adhesion12Months = undefined;
+      familyBom.adhesion24Months = undefined;
+      familyBom.adhesion36Months = undefined;
+      familyBom.adhesion48Months = undefined;
+      familyBom.adhesion60Months = undefined;
       familyBom.installationCost = undefined;
       familyBom.accessories.forEach((accessoryEntry) => {
         accessoryEntry.accessory.installationCost = undefined;

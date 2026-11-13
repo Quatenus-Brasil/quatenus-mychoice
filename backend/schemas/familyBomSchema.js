@@ -28,11 +28,11 @@ const createFamilyBomSchema = z
     altActivationGuide: z.string("Guia de ativação alternativa precisa ser uma String").trim().nullable(),
     chip: z.string("Chip precisa ser uma String").trim().nullable(),
     riskFactor: z.number("Fator de risco precisa ser um número"),
-    commitment12Months: z.number("Adesão 12 meses precisa ser um número").nonnegative("A12 não pode ser negativo"),
-    commitment24Months: z.number("Adesão 24 meses precisa ser um número").nonnegative("A24 não pode ser negativo"),
-    commitment36Months: z.number("Adesão 36 meses precisa ser um número").nonnegative("A36 não pode ser negativo"),
-    commitment48Months: z.number("Adesão 48 meses precisa ser um número").nonnegative("A48 não pode ser negativo"),
-    commitment60Months: z.number("Adesão 60 meses precisa ser um número").nonnegative("A60 não pode ser negativo"),
+    adhesion12Months: z.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
+    adhesion24Months: z.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
+    adhesion36Months: z.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
+    adhesion48Months: z.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
+    adhesion60Months: z.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
     installationCost: z.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
   })
   .strict();

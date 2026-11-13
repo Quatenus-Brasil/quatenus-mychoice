@@ -82,26 +82,25 @@ const familyBomSchema = new Schema(
     },
     riskFactor: {
       type: Number,
-      default: 0,
       required: true,
     },
-    commitment12Months: {
+    adhesion12Months: {
       type: Number,
       default: 0,
     },
-    commitment24Months: {
+    adhesion24Months: {
       type: Number,
       default: 0,
     },
-    commitment36Months: {
+    adhesion36Months: {
       type: Number,
       default: 0,
     },
-    commitment48Months: {
+    adhesion48Months: {
       type: Number,
       default: 0,
     },
-    commitment60Months: {
+    adhesion60Months: {
       type: Number,
       default: 0,
     },
@@ -128,7 +127,7 @@ familyBomSchema.virtual("price").get(function () {
   const accessoriesTotal = this.accessories.reduce((total, { amount, accessory }) => total + amount * accessory.price, 0);
   const chipPrice = this.chip ? this.chip.price : 0;
 
-  return itensTotal + accessoriesTotal + this.device.price + chipPrice
+  return itensTotal + accessoriesTotal + this.device.price + chipPrice;
 });
 
 const FamilyBom = mongoose.model("FamilyBom", familyBomSchema);
