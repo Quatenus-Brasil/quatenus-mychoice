@@ -14,6 +14,12 @@ const createAccessorySchema = z
         item: z.string("Item precisa ser uma String").trim().min(1, "Item é obrigatório"),
       }),
     ),
+    riskFactor: z.number("Fator de risco precisa ser um número"),
+    adhesion12Months: z.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
+    adhesion24Months: z.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
+    adhesion36Months: z.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
+    adhesion48Months: z.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
+    adhesion60Months: z.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
     installationCost: z.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
   })
   .strict();

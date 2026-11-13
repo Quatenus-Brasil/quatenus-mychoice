@@ -11,6 +11,12 @@ const createAccessory = async (request, response) => {
       banner: request.body.banner,
       observation: request.body.observation,
       itens: request.body.itens,
+      riskFactor: request.body.riskFactor,
+      adhesion12Months: request.body.adhesion12Months,
+      adhesion24Months: request.body.adhesion24Months,
+      adhesion36Months: request.body.adhesion36Months,
+      adhesion48Months: request.body.adhesion48Months,
+      adhesion60Months: request.body.adhesion60Months,
       installationCost: request.body.installationCost,
       createdBy: request.user._id,
       updatedBy: request.user._id,
@@ -36,6 +42,12 @@ const findAllAccessories = async (request, response) => {
     if (!canSeePrice) {
       allAccessories.forEach((item) => {
         item.installationCost = undefined;
+        item.riskFactor = undefined;
+        item.adhesion12Months = undefined;
+        item.adhesion24Months = undefined;
+        item.adhesion36Months = undefined;
+        item.adhesion48Months = undefined;
+        item.adhesion60Months = undefined;
       });
     }
 
@@ -63,6 +75,12 @@ const findAccessoryById = async (request, response) => {
 
     if (!canSeePrice) {
       accessory.installationCost = undefined;
+      accessory.riskFactor = undefined;
+      accessory.adhesion12Months = undefined;
+      accessory.adhesion24Months = undefined;
+      accessory.adhesion36Months = undefined;
+      accessory.adhesion48Months = undefined;
+      accessory.adhesion60Months = undefined;
     }
 
     return response.status(200).json({ success: true, message: "Acessório encontrado com sucesso", result: accessory.toObject({ virtuals: canSeePrice }) });

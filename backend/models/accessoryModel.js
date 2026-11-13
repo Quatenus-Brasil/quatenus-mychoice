@@ -46,6 +46,30 @@ const accessorySchema = new Schema(
       type: [itensSchema],
       required: true,
     },
+    riskFactor: {
+      type: Number,
+      required: true,
+    },
+    adhesion12Months: {
+      type: Number,
+      default: 0,
+    },
+    adhesion24Months: {
+      type: Number,
+      default: 0,
+    },
+    adhesion36Months: {
+      type: Number,
+      default: 0,
+    },
+    adhesion48Months: {
+      type: Number,
+      default: 0,
+    },
+    adhesion60Months: {
+      type: Number,
+      default: 0,
+    },
     installationCost: {
       type: Number,
       required: true,
