@@ -1,4 +1,5 @@
 import FamilyBom from "../models/familyBomModel.js";
+import { findFamilyBomDependents } from "../services/dependencyCheck.js";
 
 const createFamilyBom = async (request, response) => {
   try {
@@ -121,11 +122,23 @@ const findFamilyBomById = async (request, response) => {
 const deleteFamilyBom = async (request, response) => {
   try {
     const { id } = request.params;
-    const familyBom = await FamilyBom.findByIdAndDelete(id);
+    const familyBom = await FamilyBom.findById(id);
 
     if (!familyBom) {
       return response.status(404).json({ success: false, message: "B.O.M da Família não encontrado" });
     }
+
+    const dependents = await findFamilyBomDependents(id);
+
+    if (dependents.length > 0) {
+      return response.status(409).json({
+        success: false,
+        message: `O B.O.M da Família "${familyBom.name}" não pode ser excluído pois está em uso em ${dependents.length} combo(s).`,
+        dependents,
+      });
+    }
+
+    await familyBom.deleteOne();
 
     return response.status(200).json({ success: true, message: `O B.O.M da Família "${familyBom.name}" foi excluído com sucesso` });
   } catch (error) {

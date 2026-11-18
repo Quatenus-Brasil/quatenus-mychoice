@@ -1,13 +1,18 @@
 import Accessory from "../models/accessoryModel.js";
+import Combo from "../models/comboModel.js";
 import Device from "../models/deviceModel.js";
 import FamilyBom from "../models/familyBomModel.js";
 
 const findDependents = async (configs, targetId) => {
   const results = await Promise.all(
-    configs.map(async ({ model, field, buildQuery, type, projection = "name" }) => {
+    configs.map(async ({ model, field, buildQuery, type, projection = "name", populate, getName }) => {
       const filter = buildQuery ? buildQuery(targetId) : { [field]: targetId };
-      const docs = await model.find(filter).select(projection).lean();
-      return docs.map((d) => ({ id: d._id, name: d.name, type }));
+      const query = model.find(filter).select(projection);
+
+      if (populate) query.populate(populate);
+
+      const docs = await query.lean();
+      return docs.map((d) => ({ id: d._id, name: getName ? getName(d) : d.name, type }));
     }),
   );
   return results.flat();
@@ -41,4 +46,20 @@ const findDeviceDependents = async (deviceId) => {
   );
 };
 
-export { findDependents, findItemDependents, findAccessoryDependents, findDeviceDependents };
+const findFamilyBomDependents = async (familyBomId) => {
+  return findDependents(
+    [
+      {
+        model: Combo,
+        field: "baseFamily",
+        type: "Combo",
+        projection: "baseFamily",
+        populate: { path: "baseFamily", select: "name" },
+        getName: (combo) => combo.baseFamily?.name,
+      },
+    ],
+    familyBomId,
+  );
+};
+
+export { findDependents, findItemDependents, findAccessoryDependents, findDeviceDependents, findFamilyBomDependents };
