@@ -5,6 +5,7 @@ import chipRoute from "./chipRoute.js";
 import deviceRoute from "./deviceRoute.js";
 import accessoryRoute from "./accessoryRoute.js";
 import familyBomRoute from "./familyBomRoute.js";
+import comboRoute from "./comboRoute.js";
 import uploadRoute from "./uploadRoute.js";
 
 const router = Router();
@@ -16,5 +17,6 @@ router.use("/chip", chipRoute);
 router.use("/device", deviceRoute);
 router.use("/accessory", accessoryRoute);
 router.use("/family-bom", familyBomRoute);
+router.use("/combo", comboRoute);
 
 export default router;
