@@ -3,6 +3,7 @@ import axios from "axios";
 const ENTITY_FOLDERS = {
   device: "devices",
   accessory: "accessories",
+  combo: "combos", 
 };
 
 const signUpload = async (entity) => {
