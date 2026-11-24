@@ -8,8 +8,8 @@ import { createFamilyBomSchema, editFamilyBomSchema } from "../schemas/familyBom
 const router = express.Router();
 
 router.post("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), validate(createFamilyBomSchema), createFamilyBom);
-router.get("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), findAllFamiliesBom);
-router.get("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), findFamilyBomById);
+router.get("/", authenticateUser, authorizedSectors("Suporte & Operações", "Logística", "Compras", "Direção"), findAllFamiliesBom);
+router.get("/:id", authenticateUser, validId, authorizedSectors("Suporte & Operações", "Logística", "Compras", "Direção"), findFamilyBomById);
 router.delete("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), deleteFamilyBom);
 router.patch("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), validate(editFamilyBomSchema), editFamilyBom);
 
