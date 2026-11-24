@@ -28,7 +28,22 @@ const createFamilyBom = async (request, response) => {
 
     const familyBom = await FamilyBom.create(newFamilyBom);
 
-    await familyBom.populate("items.item accessories.accessory device altDevice chip");
+    await familyBom.populate([
+      { path: "items.item" },
+      {
+        path: "accessories.accessory",
+        populate: { path: "items.item" },
+      },
+      {
+        path: "device",
+        populate: { path: "items.item" },
+      },
+      {
+        path: "altDevice",
+        populate: { path: "items.item" },
+      },
+      { path: "chip" },
+    ]);
 
     return response.status(201).json({ success: true, message: "B.O.M da Família criado com sucesso", result: familyBom });
   } catch (error) {
@@ -40,9 +55,9 @@ const createFamilyBom = async (request, response) => {
 const findAllFamiliesBom = async (request, response) => {
   try {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
-    
-    const allFamiliesBom = (await FamilyBom.find({})).map(familyBom => familyBom.toObject({ virtuals: canSeePrice }));
-    
+
+    const allFamiliesBom = (await FamilyBom.find({})).map((familyBom) => familyBom.toObject({ virtuals: canSeePrice }));
+
     if (!canSeePrice) {
       allFamiliesBom.forEach((item) => {
         item.riskFactor = undefined;
@@ -155,7 +170,7 @@ const editFamilyBom = async (request, response) => {
     if (!currentFamilyBom) {
       return response.status(404).json({ success: false, message: "B.O.M da Família não encontrado" });
     }
-    
+
     const updateData = {
       ...request.body,
       updatedBy: request.user._id,
