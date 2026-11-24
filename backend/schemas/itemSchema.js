@@ -5,7 +5,7 @@ const createItemSchema = z
     name: z.string("Nome precisa ser uma String").trim().min(1, "Nome é obrigatório"),
     code: z.string("Código precisa ser uma String").trim().min(1, "Código Star é obrigatório"),
     desc: z.string("Descrição precisa ser uma String").trim().min(1, "Descrição é obrigatória"),
-    price: z.number("Preço precisa ser um número").positive("Preço deve ser maior que zero"),
+    price: z.number("Preço precisa ser um número").nonnegative("Preço não pode ser negativo"),
   })
   .strict(); 
 
