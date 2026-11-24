@@ -3,6 +3,20 @@ import { Schema } from "mongoose";
 
 const interestRate = 0.02;
 
+const calculateNoAdhesion = (adhesion, monthlyFee, months) => {
+  if (adhesion === 0) return monthlyFee;
+
+  const payment = (adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months));
+
+  return Number((Math.round((payment + monthlyFee) / 1000) * 1000 - 10).toFixed(2));
+};
+
+const calculateAdhesion = (familyAdhesion, accessories, field) => {
+  const accessoriesTotal = accessories.reduce((total, accessory) => total + (accessory?.[field] ?? 0), 0);
+
+  return Number(((familyAdhesion ?? 0) + accessoriesTotal).toFixed(2));
+};
+
 const linkSchema = new Schema(
   {
     label: {
@@ -70,14 +84,14 @@ productsSchema.virtual("installationCategory").get(function () {
   if (installationCost == null) return undefined;
 
   if (installationCost <= 0) return 0;
-  if (installationCost >= 0 && installationCost <= 100) return 1;
-  if (installationCost > 100 && installationCost <= 120) return 2;
-  if (installationCost > 120 && installationCost <= 140) return 3;
-  if (installationCost > 140 && installationCost <= 160) return 4;
-  if (installationCost > 160 && installationCost <= 200) return 5;
-  if (installationCost > 200 && installationCost <= 250) return 6;
-  if (installationCost > 250 && installationCost <= 300) return 7;
-  if (installationCost > 300) return 8;
+  if (installationCost >= 0 && installationCost <= 10000) return 1;
+  if (installationCost > 10000 && installationCost <= 12000) return 2;
+  if (installationCost > 12000 && installationCost <= 14000) return 3;
+  if (installationCost > 14000 && installationCost <= 16000) return 4;
+  if (installationCost > 16000 && installationCost <= 20000) return 5;
+  if (installationCost > 20000 && installationCost <= 25000) return 6;
+  if (installationCost > 25000 && installationCost <= 30000) return 7;
+  if (installationCost > 30000) return 8;
 });
 
 productsSchema.virtual("installationTotal").get(function () {
@@ -86,14 +100,14 @@ productsSchema.virtual("installationTotal").get(function () {
   if (installationCost == null) return undefined;
 
   if (installationCost <= 0) return 0;
-  if (installationCost === 1) return 100;
-  if (installationCost === 2) return 120;
-  if (installationCost === 3) return 140;
-  if (installationCost === 4) return 160;
-  if (installationCost === 5) return 200;
-  if (installationCost === 6) return 250;
-  if (installationCost === 7) return 300;
-  if (installationCost === 8) return 550;
+  if (installationCost === 1) return 10000;
+  if (installationCost === 2) return 12000;
+  if (installationCost === 3) return 14000;
+  if (installationCost === 4) return 16000;
+  if (installationCost === 5) return 20000;
+  if (installationCost === 6) return 25000;
+  if (installationCost === 7) return 30000;
+  if (installationCost === 8) return 55000;
 });
 
 productsSchema.virtual("productBom").get(function () {
@@ -118,107 +132,47 @@ productsSchema.virtual("adhesion").get(function () {
 
   const base = (cost + installation) / (1 - riskFactor);
 
-  return Number((Math.round(base / 100) * 100 - 0.1).toFixed(2));
+  return Number((Math.round(base / 10000) * 10000 - 10).toFixed(2));
 });
 
 productsSchema.virtual("adhesion12months").get(function () {
-  const { adhesion12Months: familyAdhesion } = this.parent().baseFamily;
-  const accessoryAdhesions = this.accessories.map((accessory) => accessory?.adhesion12Months);
-
-  if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
-
-  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
+  return calculateAdhesion(this.parent().baseFamily.adhesion12Months, this.accessories, "adhesion12Months");
 });
 
 productsSchema.virtual("adhesion24months").get(function () {
-  const { adhesion24Months: familyAdhesion } = this.parent().baseFamily;
-  const accessoryAdhesions = this.accessories.map((accessory) => accessory?.adhesion24Months);
-
-  if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
-
-  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
+  return calculateAdhesion(this.parent().baseFamily.adhesion24Months, this.accessories, "adhesion24Months");
 });
 
 productsSchema.virtual("adhesion36months").get(function () {
-  const { adhesion36Months: familyAdhesion } = this.parent().baseFamily;
-  const accessoryAdhesions = this.accessories.map((accessory) => accessory?.adhesion36Months);
-
-  if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
-
-  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
+  return calculateAdhesion(this.parent().baseFamily.adhesion36Months, this.accessories, "adhesion36Months");
 });
 
 productsSchema.virtual("adhesion48months").get(function () {
-  const { adhesion48Months: familyAdhesion } = this.parent().baseFamily;
-  const accessoryAdhesions = this.accessories.map((accessory) => accessory?.adhesion48Months);
-
-  if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
-
-  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
+  return calculateAdhesion(this.parent().baseFamily.adhesion48Months, this.accessories, "adhesion48Months");
 });
 
 productsSchema.virtual("adhesion60months").get(function () {
-  const { adhesion60Months: familyAdhesion } = this.parent().baseFamily;
-  const accessoryAdhesions = this.accessories.map((accessory) => accessory?.adhesion60Months);
-
-  if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
-
-  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
+  return calculateAdhesion(this.parent().baseFamily.adhesion60Months, this.accessories, "adhesion60Months");
 });
 
 productsSchema.virtual("noAdhesion12months").get(function () {
-  const familyAdhesion = this.parent().baseFamily.adhesion12Months;
-  const accessoriesAdhesion = this.accessories.reduce((total, accessory) => total + accessory.adhesion12Months, 0);
-  const adhesion = this.adhesion;
-  const months = 12;
-
-  const monthlyFee = familyAdhesion + accessoriesAdhesion;
-
-  return Number((Math.round(((adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months)) + monthlyFee) / 10) * 10 - 0.1).toFixed(2));
+  return calculateNoAdhesion(this.adhesion, this.adhesion12months, 12);
 });
 
 productsSchema.virtual("noAdhesion24months").get(function () {
-  const familyAdhesion = this.parent().baseFamily.adhesion24Months;
-  const accessoriesAdhesion = this.accessories.reduce((total, accessory) => total + accessory.adhesion24Months, 0);
-  const adhesion = this.adhesion;
-  const months = 24;
-
-  const monthlyFee = familyAdhesion + accessoriesAdhesion;
-
-  return Number((Math.round(((adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months)) + monthlyFee) / 10) * 10 - 0.1).toFixed(2));
+  return calculateNoAdhesion(this.adhesion, this.adhesion24months, 24);
 });
 
 productsSchema.virtual("noAdhesion36months").get(function () {
-  const familyAdhesion = this.parent().baseFamily.adhesion36Months;
-  const accessoriesAdhesion = this.accessories.reduce((total, accessory) => total + accessory.adhesion36Months, 0);
-  const adhesion = this.adhesion;
-  const months = 36;
-
-  const monthlyFee = familyAdhesion + accessoriesAdhesion;
-
-  return Number((Math.round(((adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months)) + monthlyFee) / 10) * 10 - 0.1).toFixed(2));
+  return calculateNoAdhesion(this.adhesion, this.adhesion36months, 36);
 });
 
 productsSchema.virtual("noAdhesion48months").get(function () {
-  const familyAdhesion = this.parent().baseFamily.adhesion48Months;
-  const accessoriesAdhesion = this.accessories.reduce((total, accessory) => total + accessory.adhesion48Months, 0);
-  const adhesion = this.adhesion;
-  const months = 48;
-
-  const monthlyFee = familyAdhesion + accessoriesAdhesion;
-
-  return Number((Math.round(((adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months)) + monthlyFee) / 10) * 10 - 0.1).toFixed(2));
+  return calculateNoAdhesion(this.adhesion, this.adhesion48months, 48);
 });
 
 productsSchema.virtual("noAdhesion60months").get(function () {
-  const familyAdhesion = this.parent().baseFamily.adhesion60Months;
-  const accessoriesAdhesion = this.accessories.reduce((total, accessory) => total + accessory.adhesion60Months, 0);
-  const adhesion = this.adhesion;
-  const months = 60;
-
-  const monthlyFee = familyAdhesion + accessoriesAdhesion;
-
-  return Number((Math.round(((adhesion * interestRate) / (1 - Math.pow(1 + interestRate, -months)) + monthlyFee) / 10) * 10 - 0.1).toFixed(2));
+  return calculateNoAdhesion(this.adhesion, this.adhesion60months, 60);
 });
 
 const comboSchema = new Schema(
@@ -261,29 +215,6 @@ const comboSchema = new Schema(
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );
-
-comboSchema.virtual("name").get(function () {
-  return this.baseFamily.name;
-});
-
-comboSchema.virtual("code").get(function () {
-  return this.baseFamily.code;
-});
-
-comboSchema.virtual("desc").get(function () {
-  return this.baseFamily.desc;
-});
-
-comboSchema.virtual("familyObservation").get(function () {
-  return this.baseFamily.observation;
-});
-
-comboSchema.virtual("accessoriesObservations").get(function () {
-  return this.products
-    .flatMap((product) => product.accessories)
-    .map((accessory) => accessory.observation)
-    .filter(Boolean);
-});
 
 const Combo = mongoose.model("Combo", comboSchema);
 

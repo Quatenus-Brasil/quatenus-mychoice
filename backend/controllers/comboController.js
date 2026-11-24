@@ -34,10 +34,37 @@ const findAllCombos = async (request, response) => {
       .populate({
         path: "baseFamily",
         select: canSeePrice ? "" : privateFields,
-        populate: {
-          path: "items.item",
-          select: canSeePrice ? "" : "-price",
-        },
+        populate: [
+          {
+            path: "items.item",
+            select: canSeePrice ? "" : "-price",
+          },
+          {
+            path: "accessories.accessory",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "device",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "altDevice",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "chip",
+            select: canSeePrice ? "" : "-price",
+          },
+        ],
       })
       .populate({
         path: "products.accessories",
@@ -67,10 +94,37 @@ const findComboById = async (request, response) => {
       .populate({
         path: "baseFamily",
         select: canSeePrice ? "" : privateFields,
-        populate: {
-          path: "items.item",
-          select: canSeePrice ? "" : "-price",
-        },
+        populate: [
+          {
+            path: "items.item",
+            select: canSeePrice ? "" : "-price",
+          },
+          {
+            path: "accessories.accessory",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "device",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "altDevice",
+            populate: {
+              path: "items.item",
+              select: canSeePrice ? "" : "-price",
+            },
+          },
+          {
+            path: "chip",
+            select: canSeePrice ? "" : "-price",
+          },
+        ],
       })
       .populate({
         path: "products.accessories",
