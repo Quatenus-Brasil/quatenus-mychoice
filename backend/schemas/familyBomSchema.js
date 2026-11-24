@@ -8,7 +8,7 @@ const createFamilyBomSchema = z
     observation: z.string("Observação precisa ser uma String").trim().nullable(),
     items: z.array(
       z.object({
-        amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero").min(1, "Quantidade é obrigatória"),
+        amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
         unit: z.enum(["un", "cm", "m", "kit", "sv"], "Unidade inválida"),
         item: z.string("Item precisa ser uma String").trim().min(1, "Item é obrigatório"),
       }),
@@ -16,7 +16,7 @@ const createFamilyBomSchema = z
     accessories: z
       .array(
         z.object({
-          amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero").min(1, "Quantidade é obrigatória"),
+          amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
           accessory: z.string("Acessório precisa ser uma String").trim().min(1, "Acessório é obrigatório"),
         }),
       )
