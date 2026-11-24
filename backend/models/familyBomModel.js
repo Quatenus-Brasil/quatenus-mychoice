@@ -13,7 +13,7 @@ const accessoriesSchema = new Schema({
   },
 });
 
-const itensSchema = new Schema({
+const itemsSchema = new Schema({
   amount: {
     type: Number,
     required: true,
@@ -49,8 +49,8 @@ const familyBomSchema = new Schema(
       type: String,
       default: null,
     },
-    itens: {
-      type: [itensSchema],
+    items: {
+      type: [itemsSchema],
       required: true,
     },
     accessories: {
@@ -123,11 +123,11 @@ const familyBomSchema = new Schema(
 );
 
 familyBomSchema.virtual("price").get(function () {
-  const itensTotal = this.itens.reduce((total, { amount, item }) => total + amount * item.price, 0);
+  const itemsTotal = this.items.reduce((total, { amount, item }) => total + amount * item.price, 0);
   const accessoriesTotal = this.accessories.reduce((total, { amount, accessory }) => total + amount * accessory.price, 0);
   const chipPrice = this.chip ? this.chip.price : 0;
 
-  return itensTotal + accessoriesTotal + this.device.price + chipPrice;
+  return itemsTotal + accessoriesTotal + this.device.price + chipPrice;
 });
 
 const FamilyBom = mongoose.model("FamilyBom", familyBomSchema);

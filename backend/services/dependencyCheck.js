@@ -21,9 +21,9 @@ const findDependents = async (configs, targetId) => {
 const findItemDependents = async (itemId) => {
   return findDependents(
     [
-      { model: Accessory, field: "itens.item", type: "Acessório" },
-      { model: Device, field: "itens.item", type: "Dispositivo" },
-      { model: FamilyBom, field: "itens.item", type: "BOM da Família" },
+      { model: Accessory, field: "items.item", type: "Acessório" },
+      { model: Device, field: "items.item", type: "Dispositivo" },
+      { model: FamilyBom, field: "items.item", type: "BOM da Família" },
     ],
     itemId,
   );

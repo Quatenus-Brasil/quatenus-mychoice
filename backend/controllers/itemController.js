@@ -33,7 +33,7 @@ const findAllItems = async (request, response) => {
       });
     }
 
-    return response.status(200).json({ success: true, message: "Todos os itens foram encontrados com sucesso", result: allItems });
+    return response.status(200).json({ success: true, message: "Todos os items foram encontrados com sucesso", result: allItems });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });

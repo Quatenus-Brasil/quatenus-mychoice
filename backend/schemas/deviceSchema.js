@@ -7,7 +7,7 @@ const createDeviceSchema = z
     desc: z.string("Descrição precisa ser uma String").trim().min(1, "Descrição é obrigatória"),
     banner: z.string("Banner precisa ser uma String").trim().nullable(),
     observation: z.string("Observação precisa ser uma String").trim().nullable(),
-    itens: z.array(
+    items: z.array(
       z.object({
         amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero").min(1, "Quantidade é obrigatória"),
         unit: z.enum(["un", "cm", "m", "kit", "sv"], "Unidade inválida"),

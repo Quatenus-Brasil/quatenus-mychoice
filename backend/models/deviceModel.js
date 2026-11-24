@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
-const itensSchema = new Schema({
+const itemsSchema = new Schema({
   amount: {
     type: Number,
     required: true,
@@ -41,8 +41,8 @@ const deviceSchema = new Schema(
       type: String,
       default: null,
     },
-    itens: {
-      type: [itensSchema],
+    items: {
+      type: [itemsSchema],
       required: true,
     },
     createdBy: {
@@ -60,7 +60,7 @@ const deviceSchema = new Schema(
 );
 
 deviceSchema.virtual("price").get(function () {
-  return this.itens.reduce((total, { amount, item }) => total + amount * item.price, 0);
+  return this.items.reduce((total, { amount, item }) => total + amount * item.price, 0);
 });
 const Device = mongoose.model("Device", deviceSchema);
 

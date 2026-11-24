@@ -10,7 +10,7 @@ const createAccessory = async (request, response) => {
       desc: request.body.desc,
       banner: request.body.banner,
       observation: request.body.observation,
-      itens: request.body.itens,
+      items: request.body.items,
       riskFactor: request.body.riskFactor,
       adhesion12Months: request.body.adhesion12Months,
       adhesion24Months: request.body.adhesion24Months,
@@ -24,7 +24,7 @@ const createAccessory = async (request, response) => {
 
     const accessory = await Accessory.create(newAccessory);
 
-    await accessory.populate("itens.item");
+    await accessory.populate("items.item");
 
     return response.status(201).json({ success: true, message: "Acessório criado com sucesso", result: accessory });
   } catch (error) {
@@ -37,7 +37,7 @@ const findAllAccessories = async (request, response) => {
   try {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
     
-    const allAccessories = (await Accessory.find({}).populate("itens.item", canSeePrice ? "" : "-price")).map(accessory => accessory.toObject({ virtuals: canSeePrice }));
+    const allAccessories = (await Accessory.find({}).populate("items.item", canSeePrice ? "" : "-price")).map(accessory => accessory.toObject({ virtuals: canSeePrice }));
 
     if (!canSeePrice) {
       allAccessories.forEach((item) => {
@@ -65,7 +65,7 @@ const findAccessoryById = async (request, response) => {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
 
     const accessory = await Accessory.findById(id)
-      .populate("itens.item", canSeePrice ? "" : "-price")
+      .populate("items.item", canSeePrice ? "" : "-price")
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email");
 

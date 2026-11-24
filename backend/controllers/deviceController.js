@@ -10,14 +10,14 @@ const createDevice = async (request, response) => {
       desc: request.body.desc,
       banner: request.body.banner,
       observation: request.body.observation,
-      itens: request.body.itens,
+      items: request.body.items,
       createdBy: request.user._id,
       updatedBy: request.user._id,
     };
 
     const device = await Device.create(newDevice);
 
-    await device.populate("itens.item");
+    await device.populate("items.item");
 
     return response.status(201).json({ success: true, message: "Dispositivo criado com sucesso", result: device });
   } catch (error) {
@@ -30,7 +30,7 @@ const findAllDevices = async (request, response) => {
   try {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
 
-    const allDevices = (await Device.find({}).populate("itens.item", canSeePrice ? "" : "-price")).map(device => device.toObject({ virtuals: canSeePrice }));
+    const allDevices = (await Device.find({}).populate("items.item", canSeePrice ? "" : "-price")).map(device => device.toObject({ virtuals: canSeePrice }));
 
     return response.status(200).json({ success: true, message: "Todos os dispositivos foram encontrados com sucesso", result: allDevices });
   } catch (error) {
@@ -46,7 +46,7 @@ const findDeviceById = async (request, response) => {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
 
     const device = await Device.findById(id)
-      .populate("itens.item", canSeePrice ? "" : "-price")
+      .populate("items.item", canSeePrice ? "" : "-price")
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email");
     if (!device) {

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
-const itensSchema = new Schema({
+const itemsSchema = new Schema({
   amount: {
     type: Number,
     required: true,
@@ -42,8 +42,8 @@ const accessorySchema = new Schema(
       type: String,
       default: null,
     },
-    itens: {
-      type: [itensSchema],
+    items: {
+      type: [itemsSchema],
       required: true,
     },
     riskFactor: {
@@ -89,7 +89,7 @@ const accessorySchema = new Schema(
 );
 
 accessorySchema.virtual("price").get(function () {
-  return this.itens.reduce((total, { amount, item }) => total + amount * item.price, 0);
+  return this.items.reduce((total, { amount, item }) => total + amount * item.price, 0);
 });
 
 const Accessory = mongoose.model("Accessory", accessorySchema);

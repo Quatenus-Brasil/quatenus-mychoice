@@ -35,7 +35,7 @@ const findAllCombos = async (request, response) => {
         path: "baseFamily",
         select: canSeePrice ? "" : privateFields,
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       })
@@ -43,7 +43,7 @@ const findAllCombos = async (request, response) => {
         path: "products.accessories",
         select: canSeePrice ? "" : privateFields,
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       });
@@ -68,7 +68,7 @@ const findComboById = async (request, response) => {
         path: "baseFamily",
         select: canSeePrice ? "" : privateFields,
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       })
@@ -76,7 +76,7 @@ const findComboById = async (request, response) => {
         path: "products.accessories",
         select: canSeePrice ? "" : privateFields,
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       });

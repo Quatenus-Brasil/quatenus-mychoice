@@ -8,7 +8,7 @@ const createFamilyBom = async (request, response) => {
       code: request.body.code,
       desc: request.body.desc,
       observation: request.body.observation,
-      itens: request.body.itens,
+      items: request.body.items,
       accessories: request.body.accessories,
       device: request.body.device,
       activationGuide: request.body.activationGuide,
@@ -28,7 +28,7 @@ const createFamilyBom = async (request, response) => {
 
     const familyBom = await FamilyBom.create(newFamilyBom);
 
-    await familyBom.populate("itens.item accessories.accessory device altDevice chip");
+    await familyBom.populate("items.item accessories.accessory device altDevice chip");
 
     return response.status(201).json({ success: true, message: "B.O.M da Família criado com sucesso", result: familyBom });
   } catch (error) {
@@ -69,25 +69,25 @@ const findFamilyBomById = async (request, response) => {
     const canSeePrice = request.user.admin === true || request.user.manager === true;
 
     const familyBom = await FamilyBom.findById(id)
-      .populate("itens.item", canSeePrice ? "" : "-price")
+      .populate("items.item", canSeePrice ? "" : "-price")
       .populate({
         path: "accessories.accessory",
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       })
       .populate({
         path: "device",
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       })
       .populate({
         path: "altDevice",
         populate: {
-          path: "itens.item",
+          path: "items.item",
           select: canSeePrice ? "" : "-price",
         },
       })
