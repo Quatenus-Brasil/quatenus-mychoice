@@ -60,7 +60,7 @@ const deviceSchema = new Schema(
 );
 
 deviceSchema.virtual("price").get(function () {
-  return this.items.reduce((total, { amount, item }) => total + amount * item.price, 0);
+  return Number(this.items.reduce((total, { amount, item }) => total + amount * item.price, 0).toFixed(2));
 });
 const Device = mongoose.model("Device", deviceSchema);
 

@@ -61,7 +61,7 @@ productsSchema.virtual("sumOfInstallationCost").get(function () {
 
   if (familyCost == null || accessoryCosts.some((cost) => cost == null)) return undefined;
 
-  return accessoryCosts.reduce((total, cost) => total + cost, familyCost);
+  return Number(accessoryCosts.reduce((total, cost) => total + cost, familyCost).toFixed(2));
 });
 
 productsSchema.virtual("installationCategory").get(function () {
@@ -104,7 +104,7 @@ productsSchema.virtual("productBom").get(function () {
     return undefined;
   }
 
-  return accessoryPrices.reduce((total, price) => total + price, familyBomPrice);
+  return Number(accessoryPrices.reduce((total, price) => total + price, familyBomPrice).toFixed(2));
 });
 
 productsSchema.virtual("adhesion").get(function () {
@@ -127,7 +127,7 @@ productsSchema.virtual("adhesion12months").get(function () {
 
   if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
 
-  return accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion);
+  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
 });
 
 productsSchema.virtual("adhesion24months").get(function () {
@@ -136,7 +136,7 @@ productsSchema.virtual("adhesion24months").get(function () {
 
   if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
 
-  return accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion);
+  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
 });
 
 productsSchema.virtual("adhesion36months").get(function () {
@@ -145,7 +145,7 @@ productsSchema.virtual("adhesion36months").get(function () {
 
   if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
 
-  return accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion);
+  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
 });
 
 productsSchema.virtual("adhesion48months").get(function () {
@@ -154,7 +154,7 @@ productsSchema.virtual("adhesion48months").get(function () {
 
   if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
 
-  return accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion);
+  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
 });
 
 productsSchema.virtual("adhesion60months").get(function () {
@@ -163,7 +163,7 @@ productsSchema.virtual("adhesion60months").get(function () {
 
   if (familyAdhesion == null || accessoryAdhesions.some((adhesion) => adhesion == null)) return undefined;
 
-  return accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion);
+  return Number(accessoryAdhesions.reduce((total, adhesion) => total + adhesion, familyAdhesion).toFixed(2));
 });
 
 productsSchema.virtual("noAdhesion12months").get(function () {
