@@ -122,6 +122,12 @@ const findFamilyBomById = async (request, response) => {
       familyBom.installationCost = undefined;
       familyBom.accessories.forEach((accessoryEntry) => {
         accessoryEntry.accessory.installationCost = undefined;
+        accessoryEntry.accessory.riskFactor = undefined;
+        accessoryEntry.accessory.adhesion12Months = undefined;
+        accessoryEntry.accessory.adhesion24Months = undefined;
+        accessoryEntry.accessory.adhesion36Months = undefined;
+        accessoryEntry.accessory.adhesion48Months = undefined;
+        accessoryEntry.accessory.adhesion60Months = undefined;
       });
     }
 
