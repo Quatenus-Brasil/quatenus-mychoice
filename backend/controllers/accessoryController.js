@@ -35,21 +35,10 @@ const createAccessory = async (request, response) => {
 
 const findAllAccessories = async (request, response) => {
   try {
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
     
-    const allAccessories = (await Accessory.find({}).populate("items.item", canSeePrice ? "" : "-price")).map(accessory => accessory.toObject({ virtuals: canSeePrice }));
-
-    if (!canSeePrice) {
-      allAccessories.forEach((item) => {
-        item.installationCost = undefined;
-        item.riskFactor = undefined;
-        item.adhesion12Months = undefined;
-        item.adhesion24Months = undefined;
-        item.adhesion36Months = undefined;
-        item.adhesion48Months = undefined;
-        item.adhesion60Months = undefined;
-      });
-    }
+    const allAccessories = await Accessory.find({})
+    .select("name code desc banner")
+    .lean();
 
     return response.status(200).json({ success: true, message: "Todos os acessórios foram encontrados com sucesso", result: allAccessories });
   } catch (error) {

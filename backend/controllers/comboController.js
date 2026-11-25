@@ -27,57 +27,33 @@ const createCombo = async (request, response) => {
 
 const findAllCombos = async (request, response) => {
   try {
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
-    const privateFields = "-riskFactor -adhesion12Months -adhesion24Months -adhesion36Months -adhesion48Months -adhesion60Months -installationCost";
-
     const allCombos = await Combo.find({})
+      .select("banner")
       .populate({
         path: "baseFamily",
-        select: canSeePrice ? "" : privateFields,
+        select: "name code desc",
         populate: [
           {
-            path: "items.item",
-            select: canSeePrice ? "" : "-price",
-          },
-          {
             path: "accessories.accessory",
-            populate: {
-              path: "items.item",
-              select: canSeePrice ? "" : "-price",
-            },
+            select: "name code",
           },
           {
             path: "device",
-            populate: {
-              path: "items.item",
-              select: canSeePrice ? "" : "-price",
-            },
-          },
-          {
-            path: "altDevice",
-            populate: {
-              path: "items.item",
-              select: canSeePrice ? "" : "-price",
-            },
+            select: "name code",
           },
           {
             path: "chip",
-            select: canSeePrice ? "" : "-price",
+            select: "name code",
           },
         ],
       })
       .populate({
         path: "products.accessories",
-        select: canSeePrice ? "" : privateFields,
-        populate: {
-          path: "items.item",
-          select: canSeePrice ? "" : "-price",
-        },
-      });
+        select: "name code",
+      })
+      .lean();
 
-    const result = allCombos.map((combo) => combo.toObject({ virtuals: canSeePrice }));
-
-    return response.status(200).json({ success: true, message: "Todos os combos foram encontrados com sucesso", result });
+    return response.status(200).json({ success: true, message: "Todos os combos foram encontrados com sucesso", result: allCombos });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
@@ -129,7 +105,7 @@ const findComboById = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
-    // TODO: Isso aqui é gambiarra. Pensar em uma forma melhor de lidar com campos sensíveis 
+    // TODO: Isso aqui é gambiarra. Pensar em uma forma melhor de lidar com campos sensíveis
     const canSeePrivateFields = request.user.admin === true || (request.user.manager === true && request.user.sector === "Suporte & Operações");
 
     const result = combo.toObject({ virtuals: true });

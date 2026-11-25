@@ -23,15 +23,7 @@ const createItem = async (request, response) => {
 
 const findAllItems = async (request, response) => {
   try {
-    const allItems = await Item.find({});
-
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
-
-    if (!canSeePrice) {
-      allItems.forEach((item) => {
-        item.price = undefined;
-      });
-    }
+    const allItems = await Item.find({}).select("name code desc").lean();
 
     return response.status(200).json({ success: true, message: "Todos os items foram encontrados com sucesso", result: allItems });
   } catch (error) {

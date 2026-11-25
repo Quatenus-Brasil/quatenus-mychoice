@@ -54,21 +54,17 @@ const createFamilyBom = async (request, response) => {
 
 const findAllFamiliesBom = async (request, response) => {
   try {
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
-
-    const allFamiliesBom = (await FamilyBom.find({})).map((familyBom) => familyBom.toObject({ virtuals: canSeePrice }));
-
-    if (!canSeePrice) {
-      allFamiliesBom.forEach((item) => {
-        item.riskFactor = undefined;
-        item.adhesion12Months = undefined;
-        item.adhesion24Months = undefined;
-        item.adhesion36Months = undefined;
-        item.adhesion48Months = undefined;
-        item.adhesion60Months = undefined;
-        item.installationCost = undefined;
-      });
-    }
+    const allFamiliesBom = await FamilyBom.find({})
+      .select("name code desc")
+      .populate({
+        path: "device",
+        select: "name code",
+      })
+      .populate({
+        path: "chip",
+        select: "name code",
+      })
+      .lean();
 
     return response.status(200).json({ success: true, message: "Todos os B.O.Ms da Família foram encontrados com sucesso", result: allFamiliesBom });
   } catch (error) {
