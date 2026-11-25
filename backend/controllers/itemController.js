@@ -70,7 +70,7 @@ const deleteItem = async (request, response) => {
       return response.status(409).json({
         success: false,
         message: `O item "${item.name}" não pode ser excluído pois está em uso em ${dependents.length} registro(s).`,
-        dependents,
+        result: dependents,
       });
     }
 

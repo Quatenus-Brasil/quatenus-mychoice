@@ -94,7 +94,7 @@ const deleteAccessory = async (request, response) => {
       return response.status(409).json({
         success: false,
         message: `O acessório "${accessory.name}" não pode ser excluído pois está em uso em ${dependents.length} registro(s).`,
-        dependents,
+        result: dependents,
       });
     }
 

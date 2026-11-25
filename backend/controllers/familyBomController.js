@@ -149,7 +149,7 @@ const deleteFamilyBom = async (request, response) => {
       return response.status(409).json({
         success: false,
         message: `O B.O.M da Família "${familyBom.name}" não pode ser excluído pois está em uso em ${dependents.length} combo(s).`,
-        dependents,
+        result: dependents,
       });
     }
 
