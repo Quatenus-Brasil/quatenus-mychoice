@@ -42,6 +42,10 @@ const findAllCombos = async (request, response) => {
             select: "name code",
           },
           {
+            path: "altDevice",
+            select: "name code",
+          },
+          {
             path: "chip",
             select: "name code",
           },

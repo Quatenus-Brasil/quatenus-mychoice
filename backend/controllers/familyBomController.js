@@ -61,6 +61,10 @@ const findAllFamiliesBom = async (request, response) => {
         select: "name code",
       })
       .populate({
+        path: "altDevice",
+        select: "name code",
+      })
+      .populate({
         path: "chip",
         select: "name code",
       })
