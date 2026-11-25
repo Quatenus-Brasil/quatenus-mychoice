@@ -87,51 +87,41 @@ const findAllCombos = async (request, response) => {
 const findComboById = async (request, response) => {
   try {
     const { id } = request.params;
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
-    const privateFields = "-riskFactor -adhesion12Months -adhesion24Months -adhesion36Months -adhesion48Months -adhesion60Months -installationCost";
 
     const combo = await Combo.findById(id)
       .populate({
         path: "baseFamily",
-        select: canSeePrice ? "" : privateFields,
         populate: [
           {
             path: "items.item",
-            select: canSeePrice ? "" : "-price",
           },
           {
             path: "accessories.accessory",
             populate: {
               path: "items.item",
-              select: canSeePrice ? "" : "-price",
             },
           },
           {
             path: "device",
             populate: {
               path: "items.item",
-              select: canSeePrice ? "" : "-price",
             },
           },
           {
             path: "altDevice",
             populate: {
               path: "items.item",
-              select: canSeePrice ? "" : "-price",
             },
           },
           {
             path: "chip",
-            select: canSeePrice ? "" : "-price",
           },
         ],
       })
       .populate({
         path: "products.accessories",
-        select: canSeePrice ? "" : privateFields,
         populate: {
           path: "items.item",
-          select: canSeePrice ? "" : "-price",
         },
       });
 
@@ -139,10 +129,39 @@ const findComboById = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
+    // TODO: Isso aqui é gambiarra. Pensar em uma forma melhor de lidar com campos sensíveis 
+    const canSeePrivateFields = request.user.admin === true || (request.user.manager === true && request.user.sector === "Suporte & Operações");
+
+    const result = combo.toObject({ virtuals: true });
+
+    if (!canSeePrivateFields) {
+      const fieldsToRemove = ["riskFactor", "sumOfInstallationCost", "productBom", "price"];
+
+      const removePrivateFields = (value) => {
+        if (Array.isArray(value)) {
+          value.forEach(removePrivateFields);
+          return;
+        }
+
+        if (!value || typeof value !== "object") return;
+
+        Object.keys(value).forEach((field) => {
+          if (fieldsToRemove.includes(field)) {
+            delete value[field];
+            return;
+          }
+
+          removePrivateFields(value[field]);
+        });
+      };
+
+      removePrivateFields(result);
+    }
+
     return response.status(200).json({
       success: true,
       message: "Combo encontrado com sucesso",
-      result: combo.toObject({ virtuals: canSeePrice }),
+      result,
     });
   } catch (error) {
     console.log(error);
