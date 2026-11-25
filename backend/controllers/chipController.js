@@ -1,4 +1,5 @@
 import Chip from "../models/chipModel.js";
+import { findChipDependents } from "../services/dependencyCheck.js";
 
 const createChip = async (request, response) => {
   try {
@@ -57,11 +58,23 @@ const findChipById = async (request, response) => {
 const deleteChip = async (request, response) => {
   try {
     const { id } = request.params;
-    const chip = await Chip.findByIdAndDelete(id);
+    const chip = await Chip.findById(id);
 
     if (!chip) {
       return response.status(404).json({ success: false, message: "Chip não encontrado" });
     }
+
+    const dependents = await findChipDependents(id);
+
+    if (dependents.length > 0) {
+      return response.status(409).json({
+        success: false,
+        message: `O chip "${chip.name}" não pode ser excluído pois está em uso em ${dependents.length} registro(s).`,
+        result: dependents,
+      });
+    }
+
+    await chip.deleteOne();
 
     return response.status(200).json({ success: true, message: `O chip "${chip.name}" foi excluído com sucesso` });
   } catch (error) {

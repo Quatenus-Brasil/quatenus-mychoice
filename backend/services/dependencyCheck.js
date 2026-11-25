@@ -1,3 +1,4 @@
+
 import Accessory from "../models/accessoryModel.js";
 import Combo from "../models/comboModel.js";
 import Device from "../models/deviceModel.js";
@@ -27,6 +28,10 @@ const findItemDependents = async (itemId) => {
     ],
     itemId,
   );
+};
+
+const findChipDependents = async (chipId) => {
+  return findDependents([{ model: FamilyBom, field: "chip", type: "BOM da Família" }], chipId);
 };
 
 const findAccessoryDependents = async (accessoryId) => {
@@ -62,4 +67,4 @@ const findFamilyBomDependents = async (familyBomId) => {
   );
 };
 
-export { findDependents, findItemDependents, findAccessoryDependents, findDeviceDependents, findFamilyBomDependents };
+export { findDependents, findItemDependents, findChipDependents, findAccessoryDependents, findDeviceDependents, findFamilyBomDependents };
