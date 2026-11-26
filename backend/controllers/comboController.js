@@ -1,6 +1,61 @@
 import Combo from "../models/comboModel.js";
 import { deleteImage } from "../services/openinaryService.js";
 
+const privateCommercialFields = [
+  "riskFactor",
+  "adhesion12Months",
+  "adhesion24Months",
+  "adhesion36Months",
+  "adhesion48Months",
+  "adhesion60Months",
+  "installationCost",
+  "price",
+];
+
+const removeFields = (value, fields) => {
+  if (!value) return;
+
+  fields.forEach((field) => {
+    delete value[field];
+  });
+};
+
+const removeItemPrices = (items) => {
+  items?.forEach(({ item }) => removeFields(item, ["price"]));
+};
+
+const removeAccessoryPrivateFields = (accessory) => {
+  if (!accessory) return;
+
+  removeItemPrices(accessory.items);
+  removeFields(accessory, privateCommercialFields);
+};
+
+const removeDevicePrivateFields = (device) => {
+  if (!device) return;
+
+  removeItemPrices(device.items);
+  removeFields(device, ["price"]);
+};
+
+const removeComboPrivateFields = (combo) => {
+  const { baseFamily } = combo;
+
+  if (baseFamily) {
+    removeItemPrices(baseFamily.items);
+    baseFamily.accessories?.forEach(({ accessory }) => removeAccessoryPrivateFields(accessory));
+    removeDevicePrivateFields(baseFamily.device);
+    removeDevicePrivateFields(baseFamily.altDevice);
+    removeFields(baseFamily.chip, ["price"]);
+    removeFields(baseFamily, privateCommercialFields);
+  }
+
+  combo.products?.forEach((product) => {
+    product.accessories?.forEach(removeAccessoryPrivateFields);
+    removeFields(product, ["riskFactor", "sumOfInstallationCost", "productBom"]);
+  });
+};
+
 const createCombo = async (request, response) => {
   try {
     const newCombo = {
@@ -109,33 +164,12 @@ const findComboById = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
-    // TODO: Isso aqui é gambiarra. Pensar em uma forma melhor de lidar com campos sensíveis
     const canSeePrivateFields = request.user.admin === true || (request.user.manager === true && request.user.sector === "Suporte & Operações");
 
     const result = combo.toObject({ virtuals: true });
 
     if (!canSeePrivateFields) {
-      const fieldsToRemove = ["riskFactor", "sumOfInstallationCost", "productBom", "price"];
-
-      const removePrivateFields = (value) => {
-        if (Array.isArray(value)) {
-          value.forEach(removePrivateFields);
-          return;
-        }
-
-        if (!value || typeof value !== "object") return;
-
-        Object.keys(value).forEach((field) => {
-          if (fieldsToRemove.includes(field)) {
-            delete value[field];
-            return;
-          }
-
-          removePrivateFields(value[field]);
-        });
-      };
-
-      removePrivateFields(result);
+      removeComboPrivateFields(result);
     }
 
     return response.status(200).json({
