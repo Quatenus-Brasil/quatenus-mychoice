@@ -118,10 +118,6 @@ const editAccessory = async (request, response) => {
       return response.status(404).json({ success: false, message: "Acessório não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentAccessory.banner) {
-      if (currentAccessory.banner) await deleteImage(currentAccessory.banner);
-    }
-
     const updateData = {
       ...request.body,
       updatedBy: request.user._id,
@@ -131,6 +127,10 @@ const editAccessory = async (request, response) => {
 
     if (!updatedAccessory) {
       return response.status(404).json({ success: false, message: "Acessório não encontrado" });
+    }
+
+    if ("banner" in request.body && request.body.banner !== currentAccessory.banner) {
+      if (currentAccessory.banner) await deleteImage(currentAccessory.banner);
     }
 
     return response.status(200).json({ success: true, message: "Acessório editado", result: updatedAccessory });

@@ -97,10 +97,6 @@ const editDevice = async (request, response) => {
       return response.status(404).json({ success: false, message: "Dispositivo não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentDevice.banner) {
-      if (currentDevice.banner) await deleteImage(currentDevice.banner);
-    }
-
     const updateData = {
       ...request.body,
       updatedBy: request.user._id,
@@ -112,6 +108,10 @@ const editDevice = async (request, response) => {
       return response.status(404).json({ success: false, message: "Dispositivo não encontrado" });
     }
 
+    if ("banner" in request.body && request.body.banner !== currentDevice.banner) {
+      if (currentDevice.banner) await deleteImage(currentDevice.banner);
+    }
+    
     return response.status(200).json({ success: true, message: "Dispositivo editado", result: updatedDevice });
   } catch (error) {
     console.log(error);

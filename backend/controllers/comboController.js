@@ -212,10 +212,6 @@ const editCombo = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentCombo.banner && currentCombo.banner) {
-      await deleteImage(currentCombo.banner);
-    }
-
     const updateData = {
       ...request.body,
       updatedBy: request.user._id,
@@ -225,6 +221,10 @@ const editCombo = async (request, response) => {
 
     if (!updatedCombo) {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
+    }
+
+    if ("banner" in request.body && request.body.banner !== currentCombo.banner) {
+      if (currentCombo.banner) await deleteImage(currentCombo.banner);
     }
 
     await updatedCombo.populate("baseFamily products.accessories");
