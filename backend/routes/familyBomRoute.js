@@ -4,13 +4,31 @@ import { authenticateUser, isAdmin, isManager, authorizedSectors } from "../midd
 import { validId } from "../middlewares/globalMiddleware.js";
 import { validate } from "../middlewares/validationMiddleware.js";
 import { createFamilyBomSchema, editFamilyBomSchema } from "../schemas/familyBomSchema.js";
+import { uploadImages } from "../middlewares/multipartMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), validate(createFamilyBomSchema), createFamilyBom);
+router.post(
+  "/",
+  authenticateUser,
+  isManager,
+  authorizedSectors("Suporte & Operações"),
+  uploadImages(["activationGuide", "altActivationGuide"]),
+  validate(createFamilyBomSchema),
+  createFamilyBom,
+);
 router.get("/", authenticateUser, authorizedSectors("Suporte & Operações", "Logística", "Compras", "Direção"), findAllFamiliesBom);
 router.get("/:id", authenticateUser, validId, authorizedSectors("Suporte & Operações", "Logística", "Compras", "Direção"), findFamilyBomById);
 router.delete("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), deleteFamilyBom);
-router.patch("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), validate(editFamilyBomSchema), editFamilyBom);
+router.patch(
+  "/:id",
+  authenticateUser,
+  validId,
+  isManager,
+  authorizedSectors("Suporte & Operações"),
+  uploadImages(["activationGuide", "altActivationGuide"]),
+  validate(editFamilyBomSchema),
+  editFamilyBom,
+);
 
 export default router;

@@ -8,7 +8,7 @@ const createFamilyBomSchema = z
     observation: z.string("Observação precisa ser uma String").trim().nullable(),
     items: z.array(
       z.object({
-        amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
+        amount: z.coerce.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
         unit: z.enum(["un", "cm", "m", "kit", "sv"], "Unidade inválida"),
         item: z.string("Item precisa ser uma String").trim().min(1, "Item é obrigatório"),
       }),
@@ -16,24 +16,23 @@ const createFamilyBomSchema = z
     accessories: z
       .array(
         z.object({
-          amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
+          amount: z.coerce.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero"),
           accessory: z.string("Acessório precisa ser uma String").trim().min(1, "Acessório é obrigatório"),
         }),
       )
-      .optional()
-      .default([]),
+      .optional(),
     device: z.string("Dispositivo precisa ser uma String").trim().min(1, "Dispositivo é obrigatório"),
-    activationGuide: z.string("Guia de ativação precisa ser uma String").trim().nullable(),
+    activationGuide: z.string("Guia de ativação precisa ser uma String").trim().nullable().optional(),
     altDevice: z.string("Dispositivo alternativo precisa ser uma String").trim().nullable(),
-    altActivationGuide: z.string("Guia de ativação alternativa precisa ser uma String").trim().nullable(),
+    altActivationGuide: z.string("Guia de ativação alternativa precisa ser uma String").trim().nullable().optional(),
     chip: z.string("Chip precisa ser uma String").trim().nullable(),
-    riskFactor: z.number("Fator de risco precisa ser um número"),
-    adhesion12Months: z.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
-    adhesion24Months: z.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
-    adhesion36Months: z.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
-    adhesion48Months: z.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
-    adhesion60Months: z.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
-    installationCost: z.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
+    riskFactor: z.coerce.number("Fator de risco precisa ser um número"),
+    adhesion12Months: z.coerce.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
+    adhesion24Months: z.coerce.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
+    adhesion36Months: z.coerce.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
+    adhesion48Months: z.coerce.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
+    adhesion60Months: z.coerce.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
+    installationCost: z.coerce.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
   })
   .strict();
 

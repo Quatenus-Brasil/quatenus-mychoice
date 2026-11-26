@@ -6,12 +6,10 @@ import deviceRoute from "./deviceRoute.js";
 import accessoryRoute from "./accessoryRoute.js";
 import familyBomRoute from "./familyBomRoute.js";
 import comboRoute from "./comboRoute.js";
-import uploadRoute from "./uploadRoute.js";
 
 const router = Router();
 
 router.use("/user", userRoute);
-router.use("/upload", uploadRoute);
 router.use("/item", itemRoute);
 router.use("/chip", chipRoute);
 router.use("/device", deviceRoute);

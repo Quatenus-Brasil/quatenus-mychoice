@@ -4,13 +4,14 @@ import { authenticateUser, isAdmin, isManager, authorizedSectors } from "../midd
 import { validId } from "../middlewares/globalMiddleware.js";
 import { validate } from "../middlewares/validationMiddleware.js";
 import { createAccessorySchema, editAccessorySchema } from "../schemas/accessorySchema.js";
+import { uploadImages } from "../middlewares/multipartMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), validate(createAccessorySchema), createAccessory);
+router.post("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), uploadImages(["banner"]), validate(createAccessorySchema), createAccessory);
 router.get("/", authenticateUser, findAllAccessories);
 router.get("/:id", authenticateUser, validId, findAccessoryById);
 router.delete("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), deleteAccessory);
-router.patch("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), validate(editAccessorySchema), editAccessory);
+router.patch("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), uploadImages(["banner"]), validate(editAccessorySchema), editAccessory);
 
 export default router;

@@ -1,5 +1,5 @@
 import Combo from "../models/comboModel.js";
-import { deleteImage } from "../services/openinaryService.js";
+import { deleteRequestImages, uploadRequestImages } from "../services/openinaryService.js";
 
 const privateCommercialFields = [
   "riskFactor",
@@ -57,7 +57,12 @@ const removeComboPrivateFields = (combo) => {
 };
 
 const createCombo = async (request, response) => {
+  let uploadedImages = {};
+  let comboCreated = false;
+
   try {
+    uploadedImages = await uploadRequestImages(request.files, "combo");
+
     const newCombo = {
       baseFamily: request.body.baseFamily,
       usefulLinks: request.body.usefulLinks,
@@ -67,14 +72,18 @@ const createCombo = async (request, response) => {
       products: request.body.products,
       createdBy: request.user._id,
       updatedBy: request.user._id,
+      ...uploadedImages,
     };
 
     const combo = await Combo.create(newCombo);
+    comboCreated = true;
 
     await combo.populate("baseFamily products.accessories");
 
     return response.status(201).json({ success: true, message: "Combo criado com sucesso", result: combo });
   } catch (error) {
+    if (!comboCreated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
@@ -194,7 +203,7 @@ const deleteCombo = async (request, response) => {
 
     await combo.deleteOne();
 
-    if (combo.banner) await deleteImage(combo.banner);
+    await deleteRequestImages([combo.banner, combo.canva, combo.additionalInfo]);
 
     return response.status(200).json({ success: true, message: "Combo excluído com sucesso" });
   } catch (error) {
@@ -204,6 +213,9 @@ const deleteCombo = async (request, response) => {
 };
 
 const editCombo = async (request, response) => {
+  let uploadedImages = {};
+  let comboUpdated = false;
+
   try {
     const { id } = request.params;
 
@@ -212,25 +224,38 @@ const editCombo = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
+    uploadedImages = await uploadRequestImages(request.files, "combo");
+
     const updateData = {
       ...request.body,
+      ...uploadedImages,
       updatedBy: request.user._id,
     };
 
     const updatedCombo = await Combo.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: true });
 
     if (!updatedCombo) {
+      await deleteRequestImages(Object.values(uploadedImages));
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentCombo.banner) {
-      if (currentCombo.banner) await deleteImage(currentCombo.banner);
+    comboUpdated = true;
+
+    const replacedImages = ["banner", "canva", "additionalInfo"]
+      .filter((field) => field in request.body || field in uploadedImages)
+      .filter((field) => updatedCombo[field] !== currentCombo[field])
+      .map((field) => currentCombo[field]);
+
+    if (replacedImages.length > 0) {
+      await deleteRequestImages(replacedImages);
     }
 
     await updatedCombo.populate("baseFamily products.accessories");
 
     return response.status(200).json({ success: true, message: "Combo editado com sucesso", result: updatedCombo });
   } catch (error) {
+    if (!comboUpdated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }

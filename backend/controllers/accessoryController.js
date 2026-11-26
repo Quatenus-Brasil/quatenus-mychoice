@@ -1,9 +1,14 @@
 import Accessory from "../models/accessoryModel.js";
-import { deleteImage } from "../services/openinaryService.js";
+import { deleteRequestImages, uploadRequestImages } from "../services/openinaryService.js";
 import { findAccessoryDependents } from "../services/dependencyCheck.js";
 
 const createAccessory = async (request, response) => {
+  let uploadedImages = {};
+  let accessoryCreated = false;
+
   try {
+    uploadedImages = await uploadRequestImages(request.files, "accessory");
+
     const newAccessory = {
       name: request.body.name,
       code: request.body.code,
@@ -20,14 +25,18 @@ const createAccessory = async (request, response) => {
       installationCost: request.body.installationCost,
       createdBy: request.user._id,
       updatedBy: request.user._id,
+      ...uploadedImages,
     };
 
     const accessory = await Accessory.create(newAccessory);
+    accessoryCreated = true;
 
     await accessory.populate("items.item");
 
     return response.status(201).json({ success: true, message: "Acessório criado com sucesso", result: accessory });
   } catch (error) {
+    if (!accessoryCreated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
@@ -100,7 +109,7 @@ const deleteAccessory = async (request, response) => {
 
     await accessory.deleteOne();
 
-    if (accessory.banner) await deleteImage(accessory.banner);
+    await deleteRequestImages([accessory.banner]);
 
     return response.status(200).json({ success: true, message: `O acessório "${accessory.name}" foi excluído com sucesso` });
   } catch (error) {
@@ -110,6 +119,9 @@ const deleteAccessory = async (request, response) => {
 };
 
 const editAccessory = async (request, response) => {
+  let uploadedImages = {};
+  let accessoryUpdated = false;
+
   try {
     const { id } = request.params;
 
@@ -118,23 +130,31 @@ const editAccessory = async (request, response) => {
       return response.status(404).json({ success: false, message: "Acessório não encontrado" });
     }
 
+    uploadedImages = await uploadRequestImages(request.files, "accessory");
+
     const updateData = {
       ...request.body,
+      ...uploadedImages,
       updatedBy: request.user._id,
     };
 
     const updatedAccessory = await Accessory.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: true });
 
     if (!updatedAccessory) {
+      await deleteRequestImages(Object.values(uploadedImages));
       return response.status(404).json({ success: false, message: "Acessório não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentAccessory.banner) {
-      if (currentAccessory.banner) await deleteImage(currentAccessory.banner);
+    accessoryUpdated = true;
+
+    if (("banner" in request.body || "banner" in uploadedImages) && updatedAccessory.banner !== currentAccessory.banner) {
+      await deleteRequestImages([currentAccessory.banner]);
     }
 
     return response.status(200).json({ success: true, message: "Acessório editado", result: updatedAccessory });
   } catch (error) {
+    if (!accessoryUpdated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }

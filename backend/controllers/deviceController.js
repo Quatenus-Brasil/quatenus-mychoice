@@ -1,9 +1,14 @@
 import Device from "../models/deviceModel.js";
-import { deleteImage } from "../services/openinaryService.js";
+import { deleteRequestImages, uploadRequestImages } from "../services/openinaryService.js";
 import { findDeviceDependents } from "../services/dependencyCheck.js";
 
 const createDevice = async (request, response) => {
+  let uploadedImages = {};
+  let deviceCreated = false;
+
   try {
+    uploadedImages = await uploadRequestImages(request.files, "device");
+
     const newDevice = {
       name: request.body.name,
       code: request.body.code,
@@ -13,14 +18,18 @@ const createDevice = async (request, response) => {
       items: request.body.items,
       createdBy: request.user._id,
       updatedBy: request.user._id,
+      ...uploadedImages,
     };
 
     const device = await Device.create(newDevice);
+    deviceCreated = true;
 
     await device.populate("items.item");
 
     return response.status(201).json({ success: true, message: "Dispositivo criado com sucesso", result: device });
   } catch (error) {
+    if (!deviceCreated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
@@ -79,7 +88,7 @@ const deleteDevice = async (request, response) => {
 
     await device.deleteOne();
 
-    if (device.banner) await deleteImage(device.banner);
+    await deleteRequestImages([device.banner]);
 
     return response.status(200).json({ success: true, message: `O dispositivo "${device.name}" foi excluído com sucesso` });
   } catch (error) {
@@ -89,6 +98,9 @@ const deleteDevice = async (request, response) => {
 };
 
 const editDevice = async (request, response) => {
+  let uploadedImages = {};
+  let deviceUpdated = false;
+
   try {
     const { id } = request.params;
 
@@ -97,23 +109,31 @@ const editDevice = async (request, response) => {
       return response.status(404).json({ success: false, message: "Dispositivo não encontrado" });
     }
 
+    uploadedImages = await uploadRequestImages(request.files, "device");
+
     const updateData = {
       ...request.body,
+      ...uploadedImages,
       updatedBy: request.user._id,
     };
 
     const updatedDevice = await Device.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: true });
 
     if (!updatedDevice) {
+      await deleteRequestImages(Object.values(uploadedImages));
       return response.status(404).json({ success: false, message: "Dispositivo não encontrado" });
     }
 
-    if ("banner" in request.body && request.body.banner !== currentDevice.banner) {
-      if (currentDevice.banner) await deleteImage(currentDevice.banner);
+    deviceUpdated = true;
+
+    if (("banner" in request.body || "banner" in uploadedImages) && updatedDevice.banner !== currentDevice.banner) {
+      await deleteRequestImages([currentDevice.banner]);
     }
-    
+
     return response.status(200).json({ success: true, message: "Dispositivo editado", result: updatedDevice });
   } catch (error) {
+    if (!deviceUpdated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }

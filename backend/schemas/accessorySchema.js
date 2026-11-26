@@ -5,22 +5,22 @@ const createAccessorySchema = z
     name: z.string("Nome precisa ser uma String").trim().min(1, "Nome é obrigatório"),
     code: z.string("Código precisa ser uma String de números").trim().min(1, "Código é obrigatório").regex(/^\d+$/, "Código deve conter apenas números"),
     desc: z.string("Descrição precisa ser uma String").trim().min(1, "Descrição é obrigatória"),
-    banner: z.string("Banner precisa ser uma String").trim().nullable(),
+    banner: z.string("Banner precisa ser uma String").trim().nullable().optional(),
     observation: z.string("Observação precisa ser uma String").trim().nullable(),
     items: z.array(
       z.object({
-        amount: z.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero").min(1, "Quantidade é obrigatória"),
+        amount: z.coerce.number("Quantidade precisa ser um número").positive("Quantidade deve ser maior que zero").min(1, "Quantidade é obrigatória"),
         unit: z.enum(["un", "cm", "m", "kit", "sv"], "Unidade inválida"),
         item: z.string("Item precisa ser uma String").trim().min(1, "Item é obrigatório"),
       }),
     ),
-    riskFactor: z.number("Fator de risco precisa ser um número"),
-    adhesion12Months: z.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
-    adhesion24Months: z.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
-    adhesion36Months: z.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
-    adhesion48Months: z.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
-    adhesion60Months: z.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
-    installationCost: z.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
+    riskFactor: z.coerce.number("Fator de risco precisa ser um número"),
+    adhesion12Months: z.coerce.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
+    adhesion24Months: z.coerce.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
+    adhesion36Months: z.coerce.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
+    adhesion48Months: z.coerce.number("Adesão 48 meses precisa ser um número").nonnegative("Adesão 48 meses não pode ser negativo"),
+    adhesion60Months: z.coerce.number("Adesão 60 meses precisa ser um número").nonnegative("Adesão 60 meses não pode ser negativo"),
+    installationCost: z.coerce.number("Custo de instalação precisa ser um número").nonnegative("Custo de instalação não pode ser negativo"),
   })
   .strict();
 

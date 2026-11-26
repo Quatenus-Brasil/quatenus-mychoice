@@ -1,8 +1,14 @@
 import FamilyBom from "../models/familyBomModel.js";
 import { findFamilyBomDependents } from "../services/dependencyCheck.js";
+import { deleteRequestImages, uploadRequestImages } from "../services/openinaryService.js";
 
 const createFamilyBom = async (request, response) => {
+  let uploadedImages = {};
+  let familyBomCreated = false;
+
   try {
+    uploadedImages = await uploadRequestImages(request.files, "family-bom");
+
     const newFamilyBom = {
       name: request.body.name,
       code: request.body.code,
@@ -24,9 +30,11 @@ const createFamilyBom = async (request, response) => {
       installationCost: request.body.installationCost,
       createdBy: request.user._id,
       updatedBy: request.user._id,
+      ...uploadedImages,
     };
 
     const familyBom = await FamilyBom.create(newFamilyBom);
+    familyBomCreated = true;
 
     await familyBom.populate([
       { path: "items.item" },
@@ -47,6 +55,8 @@ const createFamilyBom = async (request, response) => {
 
     return response.status(201).json({ success: true, message: "B.O.M da Família criado com sucesso", result: familyBom });
   } catch (error) {
+    if (!familyBomCreated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
@@ -160,6 +170,7 @@ const deleteFamilyBom = async (request, response) => {
     }
 
     await familyBom.deleteOne();
+    await deleteRequestImages([familyBom.activationGuide, familyBom.altActivationGuide]);
 
     return response.status(200).json({ success: true, message: `O B.O.M da Família "${familyBom.name}" foi excluído com sucesso` });
   } catch (error) {
@@ -169,6 +180,9 @@ const deleteFamilyBom = async (request, response) => {
 };
 
 const editFamilyBom = async (request, response) => {
+  let uploadedImages = {};
+  let familyBomUpdated = false;
+
   try {
     const { id } = request.params;
 
@@ -177,19 +191,36 @@ const editFamilyBom = async (request, response) => {
       return response.status(404).json({ success: false, message: "B.O.M da Família não encontrado" });
     }
 
+    uploadedImages = await uploadRequestImages(request.files, "family-bom");
+
     const updateData = {
       ...request.body,
+      ...uploadedImages,
       updatedBy: request.user._id,
     };
 
     const updatedFamilyBom = await FamilyBom.findByIdAndUpdate(id, updateData, { returnDocument: "after", runValidators: true });
 
     if (!updatedFamilyBom) {
+      await deleteRequestImages(Object.values(uploadedImages));
       return response.status(404).json({ success: false, message: "B.O.M da Família não encontrado" });
+    }
+
+    familyBomUpdated = true;
+
+    const replacedImages = ["activationGuide", "altActivationGuide"]
+      .filter((field) => field in request.body || field in uploadedImages)
+      .filter((field) => updatedFamilyBom[field] !== currentFamilyBom[field])
+      .map((field) => currentFamilyBom[field]);
+
+    if (replacedImages.length > 0) {
+      await deleteRequestImages(replacedImages);
     }
 
     return response.status(200).json({ success: true, message: "B.O.M da Família editado", result: updatedFamilyBom });
   } catch (error) {
+    if (!familyBomUpdated) await deleteRequestImages(Object.values(uploadedImages));
+
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }

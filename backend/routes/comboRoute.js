@@ -4,13 +4,31 @@ import { authenticateUser, isAdmin, isManager, authorizedSectors } from "../midd
 import { validId } from "../middlewares/globalMiddleware.js";
 import { validate } from "../middlewares/validationMiddleware.js";
 import { createComboSchema, editComboSchema } from "../schemas/comboSchema.js";
+import { uploadImages } from "../middlewares/multipartMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authenticateUser, isManager, authorizedSectors("Suporte & Operações"), validate(createComboSchema), createCombo);
+router.post(
+  "/",
+  authenticateUser,
+  isManager,
+  authorizedSectors("Suporte & Operações"),
+  uploadImages(["banner", "canva", "additionalInfo"]),
+  validate(createComboSchema),
+  createCombo,
+);
 router.get("/", authenticateUser, findAllCombos);
 router.get("/:id", authenticateUser, validId, findComboById);
 router.delete("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), deleteCombo);
-router.patch("/:id", authenticateUser, validId, isManager, authorizedSectors("Suporte & Operações"), validate(editComboSchema), editCombo);
+router.patch(
+  "/:id",
+  authenticateUser,
+  validId,
+  isManager,
+  authorizedSectors("Suporte & Operações"),
+  uploadImages(["banner", "canva", "additionalInfo"]),
+  validate(editComboSchema),
+  editCombo,
+);
 
 export default router;

@@ -10,7 +10,7 @@ const accessoriesSchema = z.array(z.string("Acessório precisa ser uma String").
 const productsSchema = z.array(
   z.object({
     accessories: accessoriesSchema,
-    closure: z.number("Fechamento precisa ser um número"),
+    closure: z.coerce.number("Fechamento precisa ser um número"),
   }),
 );
 
@@ -18,9 +18,9 @@ const createComboSchema = z
   .object({
     baseFamily: z.string("Família base precisa ser uma String").trim().min(1, "Família base é obrigatória"),
     usefulLinks: usefulLinksSchema.optional().default([]),
-    banner: z.string("Banner precisa ser uma String").trim().nullable(),
-    canva: z.string("Canva precisa ser uma String").trim().nullable(),
-    additionalInfo: z.string("Informações adicionais precisam ser uma String").trim().nullable(),
+    banner: z.string("Banner precisa ser uma String").trim().nullable().optional(),
+    canva: z.string("Canva precisa ser uma String").trim().nullable().optional(),
+    additionalInfo: z.string("Informações adicionais precisam ser uma String").trim().nullable().optional(),
     products: productsSchema
       .element.extend({
         accessories: accessoriesSchema.optional().default([]),
