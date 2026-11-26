@@ -35,7 +35,20 @@ const findChipDependents = async (chipId) => {
 };
 
 const findAccessoryDependents = async (accessoryId) => {
-  return findDependents([{ model: FamilyBom, field: "accessories.accessory", type: "BOM da Família" }], accessoryId);
+  return findDependents(
+    [
+      { model: FamilyBom, field: "accessories.accessory", type: "BOM da Família" },
+      {
+        model: Combo,
+        field: "products.accessories",
+        type: "Combo",
+        projection: "baseFamily",
+        populate: { path: "baseFamily", select: "name" },
+        getName: (combo) => combo.baseFamily?.name,
+      },
+    ],
+    accessoryId,
+  );
 };
 
 const findDeviceDependents = async (deviceId) => {
