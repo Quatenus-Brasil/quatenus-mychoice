@@ -24,8 +24,6 @@ const createDevice = async (request, response) => {
     const device = await Device.create(newDevice);
     deviceCreated = true;
 
-    await device.populate("items.item");
-
     return response.status(201).json({ success: true, message: "Dispositivo criado com sucesso", result: device });
   } catch (error) {
     if (!deviceCreated) await deleteRequestImages(Object.values(uploadedImages));

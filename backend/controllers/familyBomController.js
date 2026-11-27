@@ -36,23 +36,6 @@ const createFamilyBom = async (request, response) => {
     const familyBom = await FamilyBom.create(newFamilyBom);
     familyBomCreated = true;
 
-    await familyBom.populate([
-      { path: "items.item" },
-      {
-        path: "accessories.accessory",
-        populate: { path: "items.item" },
-      },
-      {
-        path: "device",
-        populate: { path: "items.item" },
-      },
-      {
-        path: "altDevice",
-        populate: { path: "items.item" },
-      },
-      { path: "chip" },
-    ]);
-
     return response.status(201).json({ success: true, message: "B.O.M da Família criado com sucesso", result: familyBom });
   } catch (error) {
     if (!familyBomCreated) await deleteRequestImages(Object.values(uploadedImages));

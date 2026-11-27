@@ -31,8 +31,6 @@ const createAccessory = async (request, response) => {
     const accessory = await Accessory.create(newAccessory);
     accessoryCreated = true;
 
-    await accessory.populate("items.item");
-
     return response.status(201).json({ success: true, message: "Acessório criado com sucesso", result: accessory });
   } catch (error) {
     if (!accessoryCreated) await deleteRequestImages(Object.values(uploadedImages));

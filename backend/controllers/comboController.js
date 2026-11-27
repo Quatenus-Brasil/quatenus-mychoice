@@ -78,8 +78,6 @@ const createCombo = async (request, response) => {
     const combo = await Combo.create(newCombo);
     comboCreated = true;
 
-    await combo.populate("baseFamily products.accessories");
-
     return response.status(201).json({ success: true, message: "Combo criado com sucesso", result: combo });
   } catch (error) {
     if (!comboCreated) await deleteRequestImages(Object.values(uploadedImages));
