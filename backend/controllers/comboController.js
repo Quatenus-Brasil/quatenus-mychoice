@@ -250,8 +250,6 @@ const editCombo = async (request, response) => {
       await deleteRequestImages(replacedImages);
     }
 
-    await updatedCombo.populate("baseFamily products.accessories");
-
     return response.status(200).json({ success: true, message: "Combo editado com sucesso", result: updatedCombo });
   } catch (error) {
     if (!comboUpdated) await deleteRequestImages(Object.values(uploadedImages));
