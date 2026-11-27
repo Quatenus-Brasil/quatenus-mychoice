@@ -1,6 +1,7 @@
 import multer from "multer";
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const JSON_FIELDS = ["items", "accessories", "products", "usefulLinks"];
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -27,9 +28,7 @@ const parseMultipartBody = (request, response, next) => {
 
         if (trimmedValue === "null") return [key, null];
 
-        if (trimmedValue.startsWith("{") || trimmedValue.startsWith("[")) {
-          return [key, JSON.parse(trimmedValue)];
-        }
+        if (JSON_FIELDS.includes(key)) return [key, JSON.parse(trimmedValue)];
 
         return [key, value];
       }),
