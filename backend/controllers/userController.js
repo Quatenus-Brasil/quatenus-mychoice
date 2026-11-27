@@ -36,7 +36,19 @@ const createUser = async (request, response) => {
       console.error("Erro ao enviar email:", error.response?.data?.message || error.message);
     }
 
-    return response.status(201).json({ success: true, message: "Usuário registrado com sucesso", result: user });
+    return response.status(201).json({
+      success: true,
+      message: "Usuário registrado com sucesso",
+      result: {
+        _id: user._id,
+        active: user.active,
+        name: user.name,
+        email: user.email,
+        sector: user.sector,
+        admin: user.admin,
+        manager: user.manager,
+      },
+    });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
@@ -64,7 +76,11 @@ const login = async (request, response) => {
 
     const token = createToken(user._id, rememberMe, user.tokenVersion);
 
-    return response.status(200).json({ success: true, message: "Usuário logado com sucesso", result: {token, user} });
+    return response.status(200).json({
+      success: true,
+      message: "Usuário logado com sucesso",
+      result: { token, _id: user._id, active: user.active, name: user.name, email: user.email, sector: user.sector, admin: user.admin, manager: user.manager },
+    });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
@@ -83,7 +99,7 @@ const me = async (request, response) => {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
-}
+};
 
 const findAllUsers = async (request, response) => {
   try {
