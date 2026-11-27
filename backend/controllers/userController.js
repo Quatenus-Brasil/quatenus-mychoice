@@ -64,12 +64,26 @@ const login = async (request, response) => {
 
     const token = createToken(user._id, rememberMe, user.tokenVersion);
 
-    return response.status(200).json({ success: true, message: "Usuário logado com sucesso", result: token });
+    return response.status(200).json({ success: true, message: "Usuário logado com sucesso", result: {token, user} });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ success: false, message: error.message });
   }
 };
+
+const me = async (request, response) => {
+  try {
+    const user = await User.findById(request.user._id);
+    if (!user) {
+      return response.status(404).json({ success: false, message: "Usuário não encontrado" });
+    }
+
+    return response.status(200).json({ success: true, message: "Usuário encontrado com sucesso", result: user });
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ success: false, message: error.message });
+  }
+}
 
 const findAllUsers = async (request, response) => {
   try {
@@ -179,4 +193,4 @@ const changePassword = async (request, response) => {
   }
 };
 
-export { createUser, login, findAllUsers, inactivateUser, findUserById, editUser, changePassword };
+export { createUser, login, me, findAllUsers, inactivateUser, findUserById, editUser, changePassword };
