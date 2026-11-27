@@ -26,7 +26,7 @@ const createFamilyBomSchema = z
     altDevice: z.string("Dispositivo alternativo precisa ser uma String").trim().nullable(),
     altActivationGuide: z.string("Guia de ativação alternativa precisa ser uma String").trim().nullable().optional(),
     chip: z.string("Chip precisa ser uma String").trim().nullable(),
-    riskFactor: z.coerce.number("Fator de risco precisa ser um número"),
+    riskFactor: z.coerce.number("Fator de risco precisa ser um número").lt(1, "Fator de risco deve ser inferior a 100%"),
     adhesion12Months: z.coerce.number("Adesão 12 meses precisa ser um número").nonnegative("Adesão 12 meses não pode ser negativo"),
     adhesion24Months: z.coerce.number("Adesão 24 meses precisa ser um número").nonnegative("Adesão 24 meses não pode ser negativo"),
     adhesion36Months: z.coerce.number("Adesão 36 meses precisa ser um número").nonnegative("Adesão 36 meses não pode ser negativo"),
