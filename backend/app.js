@@ -24,6 +24,21 @@ const PORT = process.env.PORT || 5555;
 
 if (!process.env.DB_URI) {
   console.log("Sem URI de conexão ao MongoDB no .env");
+  process.exit(1)
+}
+
+if (!process.env.SECRET_JWT) {
+  console.log("Sem SECRET_JWT no .env");
+  process.exit(1);
+}
+
+if (!process.env.BREVO_API_KEY || !process.env.BREVO_NAME || !process.env.BREVO_EMAIL) {
+  console.log("Segredos do Brevo não configurados corretamente no .env. Envio de email não irá funcionar.")
+}
+
+if (!process.env.OPENINARY_URL || !process.env.OPENINARY_API_KEY) {
+  console.log("Sem OPENINARY_URL ou OPENINARY_API_KEY no .env");
+  process.exit(1);
 }
 
 mongoose
