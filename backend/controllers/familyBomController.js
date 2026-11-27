@@ -116,7 +116,9 @@ const findFamilyBomById = async (request, response) => {
           select: canSeePrice ? "" : "-price",
         },
       })
-      .populate("chip", canSeePrice ? "" : "-price");
+      .populate("chip", canSeePrice ? "" : "-price")
+      .populate("createdBy", "name email")
+      .populate("updatedBy", "name email");
 
     if (!familyBom) {
       return response.status(404).json({ success: false, message: "Nenhum B.O.M da Família encontrado" });

@@ -167,7 +167,9 @@ const findComboById = async (request, response) => {
         populate: {
           path: "items.item",
         },
-      });
+      })
+      .populate("createdBy", "name email")
+      .populate("updatedBy", "name email");
 
     if (!combo) {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
