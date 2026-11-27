@@ -1,6 +1,6 @@
 import express from "express";
-import { createUser, login, me, findAllUsers, inactivateUser, findUserById, editUser, changePassword } from "../controllers/userController.js";
-import { authenticateUser, isAdmin, isManager } from "../middlewares/authMiddleware.js";
+import { createUser, login, me, findAllUsers, findUserById, editUser, changePassword } from "../controllers/userController.js";
+import { authenticateUser, isAdmin } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validationMiddleware.js";
 import { createUserSchema, editUserSchema, changePasswordSchema } from "../schemas/userSchema.js";
 import { validId } from "../middlewares/globalMiddleware.js";
@@ -11,7 +11,6 @@ router.post("/create", authenticateUser, isAdmin, validate(createUserSchema), cr
 router.post("/login", login);
 router.get("/me", authenticateUser, me);
 router.get("/", authenticateUser, isAdmin, findAllUsers);
-router.patch("/inactivate/:id", authenticateUser, isAdmin, validId, inactivateUser);
 router.get("/:id", authenticateUser, isAdmin, validId, findUserById);
 router.patch("/edit/:id", authenticateUser, isAdmin, validId, validate(editUserSchema), editUser);
 router.patch("/change-password", authenticateUser, validate(changePasswordSchema), changePassword);

@@ -95,23 +95,6 @@ const findAllUsers = async (request, response) => {
   }
 };
 
-const inactivateUser = async (request, response) => {
-  try {
-    const { id } = request.params;
-
-    const user = await User.findByIdAndUpdate(id, { $set: { active: false }, $inc: { tokenVersion: 1 } }, { returnDocument: "after" });
-
-    if (!user) {
-      return response.status(404).json({ success: false, message: "Usuário não encontrado" });
-    }
-
-    return response.status(200).json({ success: true, message: "Usuário inativado com sucesso", result: user });
-  } catch (error) {
-    console.log(error);
-    return response.status(500).json({ success: false, message: error.message });
-  }
-};
-
 const findUserById = async (request, response) => {
   try {
     const { id } = request.params;
@@ -132,20 +115,48 @@ const editUser = async (request, response) => {
   try {
     const { id } = request.params;
     const updateData = { ...request.body };
+    const currentUser = await User.findById(id);
+
+    if (!currentUser) {
+      return response.status(404).json({ success: false, message: "Usuário não encontrado" });
+    }
 
     if (updateData.email) {
       const alreadyExists = await User.findOne({ email: updateData.email });
-      
+
       if (alreadyExists && alreadyExists._id.toString() !== id) {
         return response.status(400).json({ success: false, message: "Este email já está em uso por outro usuário" });
       }
     }
 
+    const becomesInactive = currentUser.active && updateData.active === false;
+    const losesAdminAccess = currentUser.active && currentUser.admin && updateData.admin === false;
+
+    if (becomesInactive && id === request.user._id) {
+      return response.status(400).json({ success: false, message: "Você não pode inativar a própria conta" });
+    }
+
+    if (becomesInactive || losesAdminAccess) {
+      const remainingAdmins = await User.countDocuments({
+        _id: { $ne: id },
+        active: true,
+        admin: true,
+      });
+
+      if (remainingAdmins === 0) {
+        return response.status(400).json({ success: false, message: "Não é possível remover o acesso do último administrador ativo" });
+      }
+    }
+
     const updateOperation = { $set: updateData };
+    const activeChanged = Object.hasOwn(updateData, "active") && updateData.active !== currentUser.active;
 
     if (updateData.password) {
       const hashedPassword = await bcrypt.hash(updateData.password, 10);
       updateOperation.$set.password = hashedPassword;
+    }
+
+    if (updateData.password || activeChanged) {
       updateOperation.$inc = { tokenVersion: 1 };
     }
 
@@ -193,4 +204,4 @@ const changePassword = async (request, response) => {
   }
 };
 
-export { createUser, login, me, findAllUsers, inactivateUser, findUserById, editUser, changePassword };
+export { createUser, login, me, findAllUsers, findUserById, editUser, changePassword };
