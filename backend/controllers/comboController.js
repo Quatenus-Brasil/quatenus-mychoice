@@ -173,7 +173,13 @@ const findComboById = async (request, response) => {
       return response.status(404).json({ success: false, message: "Combo não encontrado" });
     }
 
-    const canSeePrivateFields = request.user.admin === true || (request.user.manager === true && request.user.sector === "Suporte & Operações");
+    const canSeePrivateFields =
+      request.user.admin === true ||
+      (request.user.manager === true &&
+        (request.user.sector === "Suporte & Operações" ||
+          request.user.sector === "Direção" ||
+          request.user.sector === "Compras" ||
+          request.user.sector === "Logística"));
 
     const result = combo.toObject({ virtuals: true });
 

@@ -48,7 +48,13 @@ const findDeviceById = async (request, response) => {
   try {
     const { id } = request.params;
 
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
+    const canSeePrice =
+      request.user.admin === true ||
+      (request.user.manager === true &&
+        (request.user.sector === "Suporte & Operações" ||
+          request.user.sector === "Direção" ||
+          request.user.sector === "Compras" ||
+          request.user.sector === "Logística"));
 
     const device = await Device.findById(id)
       .populate("items.item", canSeePrice ? "" : "-price")

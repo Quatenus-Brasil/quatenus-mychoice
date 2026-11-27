@@ -42,7 +42,13 @@ const findItemById = async (request, response) => {
       return response.status(404).json({ success: false, message: "Nenhum item encontrado" });
     }
 
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
+    const canSeePrice =
+      request.user.admin === true ||
+      (request.user.manager === true &&
+        (request.user.sector === "Suporte & Operações" ||
+          request.user.sector === "Direção" ||
+          request.user.sector === "Compras" ||
+          request.user.sector === "Logística"));
 
     if (!canSeePrice) {
       item.price = undefined;

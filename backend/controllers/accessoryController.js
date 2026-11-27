@@ -42,10 +42,7 @@ const createAccessory = async (request, response) => {
 
 const findAllAccessories = async (request, response) => {
   try {
-    
-    const allAccessories = await Accessory.find({})
-    .select("name code desc banner")
-    .lean();
+    const allAccessories = await Accessory.find({}).select("name code desc banner").lean();
 
     return response.status(200).json({ success: true, message: "Todos os acessórios foram encontrados com sucesso", result: allAccessories });
   } catch (error) {
@@ -58,7 +55,13 @@ const findAccessoryById = async (request, response) => {
   try {
     const { id } = request.params;
 
-    const canSeePrice = request.user.admin === true || request.user.manager === true;
+    const canSeePrice =
+      request.user.admin === true ||
+      (request.user.manager === true &&
+        (request.user.sector === "Suporte & Operações" ||
+          request.user.sector === "Direção" ||
+          request.user.sector === "Compras" ||
+          request.user.sector === "Logística"));
 
     const accessory = await Accessory.findById(id)
       .populate("items.item", canSeePrice ? "" : "-price")
