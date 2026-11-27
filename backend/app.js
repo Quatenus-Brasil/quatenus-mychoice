@@ -51,4 +51,5 @@ mongoose
   })
   .catch((error) => {
     console.log(`Não foi possivel conectar ao banco de dados: ${error}`);
+    process.exit(1);
   });
